@@ -123,15 +123,15 @@ JenkinsNotifierRequest.prototype.shouldNotify = function(data) {
   // Notification Strategy is [Ff][Ss] which stands for "Failure" and "Success"
   // Capitalized letter means: notify always
   // small letter means: notify only if buildstatus has changed
-  
+
   if (data.build.phase === 'STARTED') {
-    // last job was a failure 
+    // last job was a failure
     if (this.status === 'FAILURE') {
       if (/F/.test(this.query.onStart)) {
         return true;
       }
     }
-    // last job was a success 
+    // last job was a success
     if (this.status === 'SUCCESS') {
       if (/S/.test(this.query.onStart)) {
         return true;
@@ -166,7 +166,7 @@ JenkinsNotifierRequest.prototype.shouldNotify = function(data) {
 JenkinsNotifierRequest.prototype.processStarted = function(data) {
   this.emit('handleSuccess', data.name);
   if (this.shouldNotify(data)) {
-    return [data.name + " build #" + data.build.number + " started: " + this.getFullUrl(data)];
+    return ["[JENKINS] *" + data.name + "* build #" + data.build.number + " started: " + this.getFullUrl(data)];
   }
   return [];
 }
@@ -181,9 +181,9 @@ JenkinsNotifierRequest.prototype.processFinished = JenkinsNotifierRequest.protot
     this.emit('handleFailed', data.name);
 
     if (this.shouldNotify(data)) {
-      var message = data.name + " build #" + data.build.number + " " + build + " failing: " + this.getFullUrl(data);
+      var message = "[JENKINS] *" + data.name + "* build #" + data.build.number + " *" + build + " failing*: " + this.getFullUrl(data);
       if (data.build.log) {
-        message = message + "\r\n" + data.build.log;
+        message = message + "\r\n`" + data.build.log + "`";
       }
       return [message];
     } else {
@@ -199,7 +199,7 @@ JenkinsNotifierRequest.prototype.processFinished = JenkinsNotifierRequest.protot
     this.emit('handleSuccess', data.name);
 
     if (this.shouldNotify(data)) {
-      return [data.name + " build #" + data.build.number + " " + build + ": " + this.getFullUrl(data)];
+      return ["[JENKINS] *" + data.name + "* build #" + data.build.number + " *" + build + "*: " + this.getFullUrl(data)];
     } else {
       this.logMessage("Not sending message, not necessary");
     }
